@@ -1,12 +1,5 @@
 (
     function(){
-        const load = () => {
-            setTimeout(() => {
-                createChatComponent();
-                createEvents();
-            }, 1000);
-        }
-
         const dataChat = [
             {
                 id: 1, 
@@ -33,6 +26,13 @@
                 likes: 0
             }
         ];
+
+        const load = () => {
+            setTimeout(() => {
+                createChatComponent();
+                createEvents();
+            }, 1000);
+        }
 
         const getTimeNotification = (dateString) => {
             const now = new Date();
@@ -80,7 +80,7 @@
             chatReplay.classList.add("chat__replay");
 
             const chatInfo = document.createElement("div");
-            chatBox.classList.add("chat_info");
+            chatInfo.classList.add("chat_info");
 
             chatInfo.appendChild(chatAvatar);
             chatInfo.appendChild(chatDate);
@@ -91,20 +91,22 @@
             return chatHeader;
         }
 
-        const createLikesChatComponent = () => {
+        const createLikesChatComponent = (data) => {
+            const {likes, id} = data;
             const chatLikes = document.createElement("div");
             chatLikes.classList.add("chat__likes");
 
             const chatButtonLike = document.createElement("button");
-            chatButtonLike.classList.add("chat__like");
+            chatButtonLike.classList.add("chat__like", "like-"+id);
             chatButtonLike.textContent = "+";
 
             const chatButtonDislike = document.createElement("button");
-            chatButtonDislike.classList.add("chat__dislike");
+            chatButtonDislike.classList.add("chat__dislike", "dislike-"+id);
             chatButtonDislike.textContent = "-";
 
             const chatCountLike = document.createElement("h3");
             chatCountLike.classList.add("chat__count");
+            chatCountLike.textContent = likes.toString();
 
             chatLikes.appendChild(chatButtonLike);
             chatLikes.appendChild(chatCountLike);
@@ -121,7 +123,7 @@
 
         const createChat = (data) => {
 
-            const { likes, username, date } = dataChat[0];
+            const { likes, username, date, id } = data;
             
             const chatMain = document.createElement("div");
             chatMain.classList.add("chat__main");
@@ -129,7 +131,7 @@
             const chatContainerInfo = document.createElement("div");
             chatContainerInfo.classList.add("chat__containerInfo");
             
-            const likesComponent = createLikesChatComponent();
+            const likesComponent = createLikesChatComponent(data);
             const headerComponent = createHeaderChatComponent();
             const bodyComponent = createBodyChatComponent();
             
@@ -143,6 +145,7 @@
         }
 
         const createChatComponent = () => {
+            localStorage.setItem("datachat", JSON.stringify(dataChat));
             const chatContainer = document.createElement("div");
             chatContainer.classList.add("chat__container");
 
@@ -155,18 +158,36 @@
         }   
 
         const createEvents = () => {
-            const buttonLike = document.querySelector(".chat__like");
-            const buttonDislike = document.querySelector(".chat__dislike");
+            const chatdata = JSON.parse(localStorage.getItem("datachat"));
+            console.log("chatdata: ", chatdata);
+            
+            for(let chat in chatdata) {
+                
+                const selectorlike = ".like-" + chatdata[chat].id;
+                const selectordislike = ".dislike-" + chatdata[chat].id;
+                const countlikes = document.querySelector(".chat__count");
+                const buttonLike = document.querySelector(selectorlike);
+                const buttonDislike = document.querySelector(selectordislike);
+    
+                buttonLike.addEventListener("click", () => {
+                    console.log("Like");
+                    const numLikes = parseInt(countlikes.textContent);
+                    let operation = numLikes + 1;
+                    countlikes.textContent = operation;
+                });
+    
+                buttonDislike.addEventListener("click", () => {
+                    console.log("Dilike");
+                    const numLikes = parseInt(countlikes.textContent);
+                    let operation = numLikes - 1;
 
-            buttonLike.addEventListener("click", () => {
-                console.log("Like");
-            });
-
-            buttonDislike.addEventListener("click", () => {
-                console.log("Dilike");
-            });
+                    if(numLikes !== 0){
+                        const count = document.querySelector(".chat__count");
+                        count.textContent = operation;
+                    }
+                });
+            }
         }
-
         load();
     }
 )()
