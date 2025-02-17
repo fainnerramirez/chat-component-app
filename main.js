@@ -27,6 +27,15 @@
             }
         ];
 
+        const API_AVATAR = "https://api.dicebear.com/9.x/adventurer/svg?seed=";
+
+        const avatar = {
+            getAvatar(username){
+                console.log("username avatar: ", username);
+                return API_AVATAR + username;
+            }
+        }
+
         const load = () => {
             setTimeout(() => {
                 createChatComponent();
@@ -66,18 +75,23 @@
             }
         }
 
-        const createHeaderChatComponent = () => {
+        const createHeaderChatComponent = (data) => {
+
+            const { username } = data;
+
             const chatHeader = document.createElement("div");
             chatHeader.classList.add("chat__header");
 
             const chatAvatar = document.createElement("div");
             chatAvatar.classList.add("chat__avatar");
+            chatAvatar.style.backgroundImage = "url(" + avatar.getAvatar(username) + ")";
 
             const chatDate = document.createElement("div");
             chatDate.classList.add("chat__date");
 
             const chatReplay = document.createElement("button");
             chatReplay.classList.add("chat__replay");
+            chatReplay.textContent = "Responder";
 
             const chatInfo = document.createElement("div");
             chatInfo.classList.add("chat_info");
@@ -92,7 +106,7 @@
         }
 
         const createLikesChatComponent = (data) => {
-            const {likes, id} = data;
+            const { likes, id } = data;
             const chatLikes = document.createElement("div");
             chatLikes.classList.add("chat__likes");
 
@@ -118,13 +132,12 @@
         const createBodyChatComponent = () => {
             const chatBody = document.createElement("div");
             chatBody.classList.add("chat__body");
+            chatBody.textContent = "Sunt incididunt proident duis labore irure deserunt. Non ut voluptate aliquip id aute anim magna cillum dolore. Ut proident est ea cupidatat laborum ex laborum. Aliqua culpa excepteur dolore cupidatat et aute pariatur minim excepteur. Amet reprehenderit exercitation nulla commodo aliquip eiusmod proident cillum minim. Minim mollit laboris dolore voluptate labore exercitation commodo pariatur id eiusmod et."
             return chatBody;
         }
 
         const createChat = (data) => {
 
-            const { likes, username, date, id } = data;
-            
             const chatMain = document.createElement("div");
             chatMain.classList.add("chat__main");
             
@@ -132,7 +145,7 @@
             chatContainerInfo.classList.add("chat__containerInfo");
             
             const likesComponent = createLikesChatComponent(data);
-            const headerComponent = createHeaderChatComponent();
+            const headerComponent = createHeaderChatComponent(data);
             const bodyComponent = createBodyChatComponent();
             
             chatContainerInfo.appendChild(headerComponent);
@@ -165,7 +178,7 @@
                 
                 const selectorlike = ".like-" + chatdata[chat].id;
                 const selectordislike = ".dislike-" + chatdata[chat].id;
-                const countlikes = document.querySelector(".chat__count");
+                const countlikes = document.querySelectorAll(".chat__count");
                 const buttonLike = document.querySelector(selectorlike);
                 const buttonDislike = document.querySelector(selectordislike);
     
